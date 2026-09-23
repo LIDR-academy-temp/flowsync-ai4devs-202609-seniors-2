@@ -42,15 +42,15 @@ Una línea por requisito, con el comando que lo verifica y el síntoma de tenerl
 ### 2. Forkea, clona e instala
 
 ```bash
-# 1. Forkea https://github.com/LIDR-academy/flowsync-ai4devs desde la interfaz de GitHub.
+# 1. Forkea https://github.com/LIDR-academy/flowsync-ai4devs-202609-seniors-2 desde la interfaz de GitHub.
 #    🚨 DESMARCA la casilla que dice copiar solo la rama por defecto: viene marcada.
 
 # 2. Clónalo desde TU fork
-git clone git@github.com:<tu-usuario>/flowsync-ai4devs.git
-cd flowsync-ai4devs
+git clone git@github.com:<tu-usuario>/flowsync-ai4devs-202609-seniors-2.git
+cd flowsync-ai4devs-202609-seniors-2
 
 # 3. La rama de partida se trae del repositorio del curso, no del fork
-git remote add upstream git@github.com:LIDR-academy/flowsync-ai4devs.git
+git remote add upstream git@github.com:LIDR-academy/flowsync-ai4devs-202609-seniors-2.git
 git fetch upstream
 git checkout -b s8/start upstream/s8/start
 
@@ -157,7 +157,7 @@ git commit -m "evals: medicion de la regla + prompts"
 git push -u origin evals-<tus-iniciales>
 ```
 
-Con la rama empujada, GitHub te ofrece arriba el botón para abrir el pull request. Va **contra el repositorio del curso** (`github.com/LIDR-academy/flowsync-ai4devs`), no contra tu fork: comprueba que el repositorio base que te propone es ese.
+Con la rama empujada, GitHub te ofrece arriba el botón para abrir el pull request. Va **contra el repositorio del curso** (`github.com/LIDR-academy/flowsync-ai4devs-202609-seniors-2`), no contra tu fork: comprueba que el repositorio base que te propone es ese.
 
 ### El plazo
 
