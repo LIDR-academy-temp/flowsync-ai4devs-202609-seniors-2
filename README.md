@@ -127,9 +127,9 @@ En el mismo archivo, debajo de la medición. **Esta parte no se puede fallar**, 
 Con el botón **Fork** de arriba. 🚨 **DESMARCA la casilla que dice copiar solo la rama por defecto**: viene marcada. Sobre un clon directo no tienes permiso de escritura, y aquí vas a crear una rama y commitear.
 
 ```bash
-git clone git@github.com:<tu-usuario>/flowsync-ai4devs.git
-cd flowsync-ai4devs
-git remote add upstream git@github.com:LIDR-academy/flowsync-ai4devs.git
+git clone git@github.com:<tu-usuario>/flowsync-ai4devs-202609-seniors-2.git
+cd flowsync-ai4devs-202609-seniors-2
+git remote add upstream git@github.com:LIDR-academy/flowsync-ai4devs-202609-seniors-2.git
 git fetch upstream
 git checkout -b s8/start upstream/s8/start
 make setup
