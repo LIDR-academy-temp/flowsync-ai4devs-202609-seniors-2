@@ -58,14 +58,14 @@ Qué tiene que responder cada una, y **qué vas a ver si la tienes mal**, que es
 
 Se trabaja sobre **tu propio fork**, porque sobre el repositorio del curso no tienes permiso de escritura: la entrega es un pull request desde él hacia el del curso.
 
-**1. Forkea el repositorio.** Entra en **https://github.com/LIDR-academy/flowsync-ai4devs** y pulsa **Fork**.
+**1. Forkea el repositorio.** Entra en **https://github.com/LIDR-academy/flowsync-ai4devs-202609-seniors-2** y pulsa **Fork**.
 
 **2. Clona tu fork** y entra en la carpeta.
 
 **3. Trae la rama de partida desde el repositorio original, no desde tu fork:**
 
 ```bash
-git remote add upstream https://github.com/LIDR-academy/flowsync-ai4devs.git
+git remote add upstream https://github.com/LIDR-academy/flowsync-ai4devs-202609-seniors-2.git
 git fetch upstream
 git checkout -b s10/start upstream/s10/start
 ```
@@ -168,7 +168,7 @@ Cuando la batería de pruebas vuelva a estar en verde, **no des el trabajo por t
 1. Entrega desde la rama `motor-<tus-iniciales>` que creaste al dejar el entorno listo, no desde `s10/start`.
 2. **Guarda tus prompts en un fichero `prompts.md` en la raíz del repositorio.** Ese nombre y esa ubicación no son negociables: es lo que lee la herramienta que revisa las entregas. La rama de partida ya lo trae con su plantilla puesta.
    - **Cada prompt va en su propio bloque de código**, con el modelo y la herramienta que usaste. Escribirlos en una línea suelta no sirve: un prompt real va de dos palabras a diez líneas, y sin delimitador no se sabe dónde acaba uno.
-3. Empuja tu rama a tu fork (`git push -u origin motor-<tus-iniciales>`) y abre el **pull request desde tu fork hacia el repositorio del curso** (`github.com/LIDR-academy/flowsync-ai4devs`; comprueba que el repositorio base que te propone GitHub es ese y no tu fork), con `HALLAZGOS.md` y `prompts.md` dentro.
+3. Empuja tu rama a tu fork (`git push -u origin motor-<tus-iniciales>`) y abre el **pull request desde tu fork hacia el repositorio del curso** (`github.com/LIDR-academy/flowsync-ai4devs-202609-seniors-2`; comprueba que el repositorio base que te propone GitHub es ese y no tu fork), con `HALLAZGOS.md` y `prompts.md` dentro.
 
 ### El plazo
 
