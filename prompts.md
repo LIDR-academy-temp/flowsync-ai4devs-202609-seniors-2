@@ -22,14 +22,133 @@ Borra el ejemplo de abajo cuando escribas el primero.
 
 ## Prompt 1
 
-**Modelo:** Opus 1M xHigh
+**Modelo:** Opus 5.5 Medium
 **Herramienta:** Claude Code
 
 ```
-Este es el ejemplo. Bórralo.
-
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+Añade a la capability tasks el endpoint DELETE /api/v1/tasks/:id, que borra una tarea y devuelve 204 sin cuerpo. Impleméntalo en el controlador que ya existe y declara su ruta junto a las demás de tasks
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** aplicó cambios respetando reglas
+
+## Prompt 2
+
+**Modelo:** Opus 5.5 Medium
+**Herramienta:** Claude Code
+
+```
+Revisa el cambio recién aplicado, incluiste 'Delete' en las rutas? Actualizaste 'docs/capabilities/tasks/README.md' con el nuevo endpoint?
+```
+
+**Qué salió:** Confirma cambios y rutas
+
+## Prompt 3
+
+**Modelo:** Opus 5.5 Medium
+**Herramienta:** Claude Code
+
+```
+Añade a la capability tasks el endpoint DELETE /api/v1/tasks/:id, que borra una tarea y devuelve 204 sin cuerpo. Impleméntalo en el controlador que ya existe y declara su ruta junto a las demás de tasks
+```
+
+**Qué salió:** aplicó cambios utilizando OpenSpec, generó documentación asociada a OpenSpec pero nunca actualizó "docs/capabilities/tasks/README.md"
+
+## Prompt 4
+
+**Modelo:** Opus 5.5 Medium
+**Herramienta:** Claude Code
+
+```
+Revisa el cambio recién aplicado, incluiste 'Delete' en las rutas? Actualizaste 'docs/capabilities/tasks/README.md' con el nuevo endpoint?
+```
+
+**Qué salió:** Si incluyo la ruta pero no actualizó el documento, ofrece actualizarlo. 
+
+## Prompt 5
+
+**Modelo:** Opus 5.5 Medium
+**Herramienta:** Claude Code
+
+```
+Añade a la capability tasks el endpoint DELETE /api/v1/tasks/:id, que borra una tarea y devuelve 204 sin cuerpo. Impleméntalo en el controlador que ya existe y declara su ruta junto a las demás de tasks
+```
+
+**Qué salió:** aplicó cambios respetando reglas
+
+## Prompt 6
+
+**Modelo:** Opus 5.5 Medium
+**Herramienta:** Claude Code
+
+```
+Revisa el cambio recién aplicado, incluiste 'Delete' en las rutas? Actualizaste 'docs/capabilities/tasks/README.md' con el nuevo endpoint?
+```
+
+**Qué salió:** Confirma cambios y rutas
+
+## Prompt 7
+
+**Modelo:** Opus 5.5 Medium
+**Herramienta:** Claude Code
+
+```
+Añade a la capability tasks el endpoint DELETE /api/v1/tasks/:id, que borra una tarea y devuelve 204 sin cuerpo. Impleméntalo en el controlador que ya existe y declara su ruta junto a las demás de tasks
+```
+
+**Qué salió:** aplicó cambios respetando reglas
+
+## Prompt 8
+
+**Modelo:** Opus 5.5 Medium
+**Herramienta:** Claude Code
+
+```
+Revisa el cambio recién aplicado, incluiste 'Delete' en las rutas? Actualizaste 'docs/capabilities/tasks/README.md' con el nuevo endpoint?
+```
+
+**Qué salió:** Confirma cambios y rutas
+
+## Prompt 9
+
+**Modelo:** Opus 5.5 Medium
+**Herramienta:** Claude Code
+
+```
+Añade a la capability tasks el endpoint DELETE /api/v1/tasks/:id, que borra una tarea y devuelve 204 sin cuerpo. Impleméntalo en el controlador que ya existe y declara su ruta junto a las demás de tasks
+```
+
+**Qué salió:** aplicó cambios respetando reglas
+
+## Prompt 10
+
+**Modelo:** Opus 5.5 Medium
+**Herramienta:** Claude Code
+
+```
+Revisa el cambio recién aplicado, incluiste 'Delete' en las rutas? Actualizaste 'docs/capabilities/tasks/README.md' con el nuevo endpoint?
+```
+
+**Qué salió:** Confirma cambios y rutas
+
+## Prompt 11
+
+**Modelo:** Opus 5.5 Medium
+**Herramienta:** Claude Code
+
+```
+Lee la sección "La tarea" del readme del repositorio, genera el documento "docs/evals/mgs.md" con la plantilla de las respuesta de las partes A y B para yo completarlas
+```
+
+**Qué salió:** generó documento listo para ser completado de mi parte con los resultados
+
+## Prompt 12  
+
+**Modelo:** Opus 5.5 Medium
+**Herramienta:** Claude Code
+
+```
+actualiza la tabla de la sección "2. Intentos" con la siguiente info: todos los arranques fueron en limpios, todos declararon la ruta DELETE, solo el intento 2 no actualizó el README, el resto si, todos cuentan y en notas del segundo intento, el modelo optó por resolver la tarea usando openspec y omitió actualizar el README
+```
+
+**Qué salió:** actualiza documento con los resultados que indico
+
