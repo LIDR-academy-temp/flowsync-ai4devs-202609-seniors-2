@@ -9,18 +9,18 @@ repite el correo o el secreto, eso es otra copia del dato (y también es un hall
 
 ## 1. La regla que saltó
 
-Qué regla saltó en tu prueba, y la línea literal que dejó el registro.
+Saltó la primera vez, que intente crear el fichero con el usuario. La segunda vez que modifica el README no saltó
 
 -
 
 ## 2. Lo que el hook no puede cazar
 
-Un dato personal o un secreto de este proyecto que el hook NO puede cazar, y por qué.
+Los correos con gmail los ha cazado y cambia el dominio, pero el password secreto123 no lo ha detectado como secreto
 
 -
 
 ## 3. Tu duda
 
-De qué dudaste, o qué no pudiste comprobar.
+De que el hook no se ejecute con otros commandos al ser un PreToolUse de bash.
 
 -
