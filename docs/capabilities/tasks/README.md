@@ -152,7 +152,7 @@ En otra terminal, el recorrido completo de la capability:
 # 1. Una cuenta y su token
 TOKEN=$(curl -s -X POST http://localhost:3333/api/v1/auth/signup \
   -H 'Content-Type: application/json' \
-  -d '{"fullName":"Ada Lovelace","email":"ada@example.com","password":"secreto123","passwordConfirmation":"secreto123"}' \
+  -d '{"fullName":"Ana Pérez","email":"ana.perez@example.com","password":"secreto123","passwordConfirmation":"secreto123"}' \
   | python3 -c "import json,sys; print(json.load(sys.stdin)['data']['token'])")
 
 # 2. Crear una tarea — 201
