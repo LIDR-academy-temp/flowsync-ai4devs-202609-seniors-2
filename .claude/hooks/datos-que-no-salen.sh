@@ -52,6 +52,10 @@ if [ "$con_add" -eq 1 ]; then
   done < <(git ls-files --others --exclude-standard -z)
 fi
 
+# Excepción acordada: `prompts.md` (en la raíz) transcribe prompts literales y
+# puede contener claves o correos de ejemplo. Se excluye de las reglas 1 y 2.
+awk -F '\t' '$1 != "prompts.md"' "$lineas" >"$lineas.filtrado" && mv "$lineas.filtrado" "$lineas"
+
 hallazgos="$tmp/hallazgos" # "regla<TAB>ruta"
 : >"$hallazgos"
 
