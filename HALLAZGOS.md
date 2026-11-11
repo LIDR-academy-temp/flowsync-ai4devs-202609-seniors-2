@@ -11,16 +11,17 @@ repite el correo o el secreto, eso es otra copia del dato (y también es un hall
 
 Qué regla saltó en tu prueba, y la línea literal que dejó el registro.
 
--
+- 2026-11-11T19:00:30Z BLOQUEADO regla=clave-reconocible archivo=prompts.md
+- 2026-11-11T19:00:30Z BLOQUEADO regla=correo-ajeno archivo=tmp-prueba-hook.txt
 
 ## 2. Lo que el hook no puede cazar
 
 Un dato personal o un secreto de este proyecto que el hook NO puede cazar, y por qué.
 
--
+- Contraseña, no lo detecta porque no lo busca
 
 ## 3. Tu duda
 
 De qué dudaste, o qué no pudiste comprobar.
 
--
+- Si Habia dejado una línea en el registro
