@@ -42,6 +42,11 @@ if hay add; then
     grep -Iq . "$f" 2>/dev/null || continue   # binario o vacío
     anadidas+=$'\n'$(awk -v f="$f" '{ print f "\t" $0 }' "$f")
   done <<< "$nuevos"
+elif printf '%s' "$cmd" | grep -qE 'git[[:space:]]+commit[^;&|]*[[:space:]](-[A-Za-z]*a[A-Za-z]*|--all)([[:space:]]|$)'; then
+  # commit -a/--all/-am: mete los cambios sin preparar de ficheros versionados
+  # (no los nuevos sin seguimiento).
+  anadidas+=$'\n'$(git diff --no-color --unified=0 | lineas_diff)
+  nombres+=$'\n'$(git diff --name-only --diff-filter=ACMR)
 fi
 
 # --- Reglas ---
