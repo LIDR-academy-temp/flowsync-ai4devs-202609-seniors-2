@@ -17,7 +17,7 @@ Qué regla saltó en tu prueba, y la línea literal que dejó el registro.
 
 Un dato personal o un secreto de este proyecto que el hook NO puede cazar, y por qué.
 
-- No se puede cazar el correo o secreto si incluye en el dialogo con agente y se guarda en su propia memoria, porque el hook solo revisa los archivos del proyecto y no la memoria del agente.
+- No se puede cazar el correo o secreto si incluye en el dialogo con agente y se guarda en su propia memoria, porque el hook solo revisa los archivos del proyecto y no la memoria del agente. Tampoco puede cazar que se guarde datos personales reales el full_name, email, password (real) de un usuario en algun archivo del proyecto, porque el hook solo revisa api keys no claves de usuarios.
 
 ## 3. Tu duda
 
