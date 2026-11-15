@@ -1,0 +1,52 @@
+# FlowSync — bases de datos PostgreSQL para desarrollo y pruebas.
+#
+# Se levantan con `make db-up`, que usa `docker compose up -d --wait`: el
+# comando no vuelve hasta que las dos comprobaciones de salud están en verde.
+
+services:
+  # Base de desarrollo. Persiste en un volumen con nombre.
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_dev
+    ports:
+      - '54410:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    # El chequeo va por TCP (`-h 127.0.0.1`) a propósito. En el primer
+    # arranque, el entrypoint de la imagen inicializa la base con un servidor
+    # temporal que solo escucha en el socket Unix; un `pg_isready` por socket
+    # lo daría por sano antes de que acepte conexiones de verdad.
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  # Base de pruebas. Efímera: el directorio de datos va en tmpfs (memoria).
+  # No basta con no declarar `volumes:`, porque la imagen declara un VOLUME
+  # sobre ese directorio y Docker crearía un volumen anónimo que sobrevive
+  # entre ejecuciones.
+  db-test:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_test
+    ports:
+      - '54411:5432'
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+volumes:
+  db-data:
+    name: flowsync-db-data

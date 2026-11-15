@@ -28,6 +28,8 @@ export default defineConfig({
     () => import('@adonisjs/core/commands'),
     () => import('@adonisjs/lucid/commands'),
     () => import('@adonisjs/session/commands'),
+    // Comandos propios registrados sin la validación de ace (ver app/commands/main.ts).
+    () => import('#commands/main'),
   ],
 
   /*
