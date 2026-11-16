@@ -1,0 +1,50 @@
+# Bases de datos de FlowSync. Se levantan con `make db-up` (que espera a que
+# las dos estén sanas) y se paran con `make db-down`.
+#
+#   db       → desarrollo, puerto 54410, datos persistidos en backend/database/pgsqlStorage
+#   db-test  → pruebas,     puerto 54411, sin volumen: arranca vacía cada vez
+#
+# Credenciales de desarrollo local, no secretas: deben coincidir con
+# backend/.env.example y backend/.env.test.
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync
+    ports:
+      - '54410:5432'
+    volumes:
+      - ./backend/database/pgsqlStorage:/var/lib/postgresql/data
+    # La primera vez la imagen inicializa la base y no acepta conexiones hasta
+    # terminar. Se comprueba por TCP (-h 127.0.0.1) y no por socket: durante la
+    # inicialización el servidor temporal solo escucha en el socket, y pg_isready
+    # por socket daría "sano" antes de tiempo.
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5432 -U flowsync -d flowsync']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  db-test:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_test
+    ports:
+      - '54411:5432'
+    # Sin volumen a propósito. La imagen declara un VOLUME en el directorio de
+    # datos, así que sin nada Docker crearía uno anónimo que sobreviviría a un
+    # restart; con tmpfs los datos viven en memoria y cada arranque empieza vacío.
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5432 -U flowsync -d flowsync_test']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
