@@ -14,7 +14,7 @@ BACKEND  := backend
 FRONTEND := frontend
 
 .DEFAULT_GOAL := help
-.PHONY: help setup start install env migrate clean
+.PHONY: help setup start install env migrate clean db-up db-down db-migrate test
 
 # La ayuda se genera a partir de los comentarios `## ...` de cada target, para
 # que no haya un segundo listado que mantener a mano y que pueda divergir.
@@ -29,7 +29,7 @@ help: ## Muestra esta ayuda
 # setup
 # ---------------------------------------------------------------------------
 
-setup: install env migrate ## Deja el proyecto listo para arrancar
+setup: install env db-up migrate ## Deja el proyecto listo para arrancar
 	@echo ""
 	@echo "✅ Setup completado. Arranca todo con: make start"
 
@@ -64,6 +64,25 @@ env:
 migrate:
 	@echo "🗃️  Ejecutando migraciones..."
 	@cd $(BACKEND) && node ace migration:run
+
+# ---------------------------------------------------------------------------
+# bases de datos y pruebas
+# ---------------------------------------------------------------------------
+
+db-up: ## Arranca db y db-test y espera a que estén sanas
+	@docker compose up -d --wait
+
+db-down: ## Para las bases sin borrar el volumen de desarrollo
+	@docker compose down
+
+db-migrate: db-up ## Migra la base de desarrollo y la de pruebas
+	@echo "🗃️  Migrando desarrollo..."
+	@cd $(BACKEND) && node ace migration:run
+	@echo "🗃️  Migrando pruebas..."
+	@cd $(BACKEND) && NODE_ENV=test node ace migration:run
+
+test: db-migrate ## Lanza la batería de pruebas del backend
+	@cd $(BACKEND) && npm test
 
 # ---------------------------------------------------------------------------
 # start
@@ -112,8 +131,7 @@ start: ## Levanta backend y frontend a la vez
 # clean
 # ---------------------------------------------------------------------------
 
-clean: ## Borra node_modules y la base de datos SQLite
+clean: ## Borra node_modules
 	@echo "🧹 Limpiando..."
 	@rm -rf $(BACKEND)/node_modules $(FRONTEND)/node_modules
-	@rm -f $(BACKEND)/tmp/db.sqlite3 $(BACKEND)/tmp/db.sqlite3-wal $(BACKEND)/tmp/db.sqlite3-shm
 	@echo "✅ Listo. Vuelve a ejecutar: make setup"
