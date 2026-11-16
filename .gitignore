@@ -12,6 +12,9 @@ node_modules/
 **/.env
 !**/.env.example
 
+# Datos de PostgreSQL de desarrollo (bind mount del servicio `db` de compose.yaml)
+backend/database/pgsqlStorage/
+
 # AdonisJS
 **/tmp/*
 !**/tmp/.gitkeep

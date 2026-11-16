@@ -8,19 +8,18 @@ Escribe **una sola línea por punto**, con tus palabras y con lo que mediste, no
 
 ## 1. Las filas que cambian y la rama
 
-Cuántas filas cambian de valor en tu cambio de esquema, medido con una consulta, y en qué rama del
-árbol de reversibilidad cae. Si tu migración no toca datos, dilo tal cual: también es una respuesta.
+Se ha creado la BD vacía, no ha copiado los datos
 
 -
 
 ## 2. Lo que la batería de pruebas no podía ver
 
-Una cosa que la batería de pruebas no podía ver. Si no encontraste ninguna, escribe qué buscaste y dónde.
+Los tests han fallado, porque no se aplico la migración en DB test.
 
 -
 
 ## 3. Tu duda
 
-De qué dudaste, o qué no pudiste comprobar.
+No pude comprobar que migraban bien las tareas y tuve que ordenarle que copiase los datos de la antigua BD de sqlite
 
 -
