@@ -163,3 +163,46 @@ No he levantado los contenedores, así que el fichero no está probado.
 ```
 
 **Qué salió:** 
+
+## Prompt 6
+
+**Modelo:** Sonnet 5.5
+**Herramienta:** Claude Code
+
+```
+Sin cambiar código: en backend/app/models/task.ts, isOverdueOn compara dueDate
+con un texto AAAA-MM-DD, y el comentario de encima justifica por qué funciona.
+Con el driver pg, ¿en qué tipo de JavaScript llega una columna date de
+PostgreSQL al modelo? ¿Y con better-sqlite3? ¿Qué devuelve la comparación en cada
+caso para una fecha anterior al día de referencia? ¿Sigue siendo válido el
+comentario? Justifícalo con código de node_modules o con una prueba que
+ejecutes, no de memoria.
+```
+
+**Qué salió:** 
+```
+Respuesta corta: con `pg`, `dueDate` llega como un objeto `Date`, y la comparación devuelve `false` siempre. Con `better-sqlite3` llega como `string`, y devuelve `true` para una fecha anterior. El comentario era cierto con SQLite y ya no lo es con PostgreSQL.
+
+Con `pg` (la conexión por defecto de `config/database.ts`)
+- `node_modules/pg-types/lib/textParsers.js:174` hace `register(1082, parseDate)`. El OID 1082 es `date`, y `parseDate` es `postgres-date`.
+- En `postgres-date/index.js`, un `YYYY-MM-DD` suelto no encaja con `DATE_TIME`, así que va a `getDate(isoDate)`. El propio fichero dice «Force YYYY-MM-DD dates to be parsed as local time», y el resultado es un `Date`.
+- Busqué `setTypeParser` en Lucid, en knex, en `config/`, en `app/` y en `start/`. No encontré ninguna anulación, así que el parser por defecto es el que se aplica.
+- `@column` sin `consume` no convierte el valor. La regla de `database/schema_rules.ts` solo cambia el tipo de TypeScript a `string`, no el valor en ejecución.
+
+Con `better-sqlite3`: SQLite no tiene un tipo `date` real. El valor se guarda y se devuelve como el texto `'2026-11-10'`.
+
+Prueba que ejecuté (con `TZ=Europe/Madrid`, referencia `'2026-11-16'`, fecha de tarea `2026-11-10`):
+
+| Driver | Tipo en JS | `dueDate < '2026-11-16'` |
+|---|---|---|
+| pg (parser 1082 real) | `object`, `instanceof Date === true` | false (incorrecto) |
+| better-sqlite3 | `string` | true (correcto) |
+
+Por qué da `false` con `pg`: `Date < string` convierte los dos lados a número. El `Date` pasa a milisegundos, `1794265200000`. El texto `'2026-11-16'` pasa a `NaN`. Cualquier comparación con `NaN` da `false`. Por eso ninguna tarea saldría vencida, tampoco las de hace un año. TypeScript no lo avisa, porque el tipo declarado es `string`.
+
+¿Sigue siendo válido el comentario? No. «Se compara texto contra texto» y «no hay hora, ni huso» describían SQLite. Con PostgreSQL, el valor real es un `Date` en medianoche local. Aunque se arreglara la comparación, el huso volvería a intervenir, que es justo lo que el comentario dice evitar. Además, `schema_rules.ts` afirma que como texto ISO «`<` compara días», y eso tampoco se cumple.
+
+Dos limitaciones. No había PostgreSQL levantado (`docker ps` vacío), así que usé el parser registrado de `pg-types`, que es la ruta que ejecuta `pg` con una columna `date`, y no una consulta real. Tampoco busqué tests de `isOverdueOn`. CLAUDE.md dice que `tasks` no tiene ninguno, y si los hubiera corrido contra SQLite, habrían pasado sin detectar esto.
+
+Arreglo posible (no aplicado, como pediste): hacer que `pg` devuelva `date` como texto, por ejemplo con `types.setTypeParser(1082, v => v)` al arrancar. Otra opción es un `consume` en la columna. En ambos casos habría que actualizar el comentario y añadir un test contra PostgreSQL.
+```
