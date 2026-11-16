@@ -41,7 +41,13 @@ export const plugins: Config['plugins'] = [
  * The teardown functions are executed after all the tests
  */
 export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
-  setup: [],
+  /**
+   * La base de pruebas (`db-test` en compose.yaml) no tiene volumen y arranca
+   * vacía cada vez, así que la suite se migra sola antes de empezar. El cleanup
+   * que devuelve `migrate()` deshace las migraciones al terminar, de modo que
+   * cada ejecución parte del esquema recién creado.
+   */
+  setup: [() => testUtils.db().migrate()],
   teardown: [],
 }
 

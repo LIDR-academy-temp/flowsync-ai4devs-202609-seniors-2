@@ -104,7 +104,9 @@ db-ps: ## Muestra el estado de las dos bases
 # test
 # ---------------------------------------------------------------------------
 
-test: db-up migrate-test ## Corre la batería del backend contra db-test
+# No hace falta migrar antes: tests/bootstrap.ts migra db-test al empezar y la
+# deja sin tablas al acabar.
+test: db-up ## Corre la batería del backend contra db-test
 	@echo "🧪 Corriendo las pruebas contra db-test..."
 	@cd $(BACKEND) && npm test
 
