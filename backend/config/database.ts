@@ -2,15 +2,9 @@ import env from '#start/env'
 import { defineConfig } from '@adonisjs/lucid'
 
 const dbConfig = defineConfig({
-  /**
-   * Default connection used for all queries.
-   */
   connection: 'pg',
 
   connections: {
-    /**
-     * PostgreSQL connection (default).
-     */
     pg: {
       client: 'pg',
       connection: {
@@ -21,26 +15,11 @@ const dbConfig = defineConfig({
         database: env.get('DB_DATABASE'),
       },
       migrations: {
-        /**
-         * Sort migration files naturally by filename.
-         */
         naturalSort: true,
-
-        /**
-         * Paths containing migration files.
-         */
         paths: ['database/migrations'],
       },
-
       schemaGeneration: {
-        /**
-         * Enable schema generation from Lucid models.
-         */
         enabled: true,
-
-        /**
-         * Custom schema rules file paths.
-         */
         rulesPaths: ['./database/schema_rules.js'],
       },
     },
