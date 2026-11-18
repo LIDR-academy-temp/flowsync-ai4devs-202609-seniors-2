@@ -1,27 +1,35 @@
-import app from '@adonisjs/core/services/app'
+import env from '#start/env'
 import { defineConfig } from '@adonisjs/lucid'
+import pg from 'pg'
+
+/**
+ * `date` (OID 1082) como texto `YYYY-MM-DD`, no como `Date`. Con SQLite llegaba así;
+ * `pg` lo convertiría a un instante en la zona local, y `schema_rules.ts` declara
+ * `due_date` como `string` y `Task.isOverdue` lo compara como texto ISO.
+ */
+pg.types.setTypeParser(1082, (value: string) => value)
 
 const dbConfig = defineConfig({
   /**
    * Default connection used for all queries.
    */
-  connection: 'sqlite',
+  connection: 'pg',
 
   connections: {
     /**
-     * SQLite connection (default).
+     * PostgreSQL connection (Docker, ver `compose.yaml`). Host, puerto y base
+     * salen del entorno: `.env` apunta al servicio `db` y `.env.test` a `db-test`.
      */
-    sqlite: {
-      client: 'better-sqlite3',
+    pg: {
+      client: 'pg',
 
       connection: {
-        filename: app.tmpPath('db.sqlite3'),
+        host: env.get('DB_HOST'),
+        port: env.get('DB_PORT'),
+        user: env.get('DB_USER'),
+        password: env.get('DB_PASSWORD'),
+        database: env.get('DB_DATABASE'),
       },
-
-      /**
-       * Required by Knex for SQLite defaults.
-       */
-      useNullAsDefault: true,
 
       migrations: {
         /**
@@ -47,26 +55,6 @@ const dbConfig = defineConfig({
         rulesPaths: ['./database/schema_rules.js'],
       },
     },
-
-    /**
-     * PostgreSQL connection.
-     * Install package to switch: npm install pg
-     */
-    // pg: {
-    //   client: 'pg',
-    //   connection: {
-    //     host: env.get('DB_HOST'),
-    //     port: env.get('DB_PORT'),
-    //     user: env.get('DB_USER'),
-    //     password: env.get('DB_PASSWORD'),
-    //     database: env.get('DB_DATABASE'),
-    //   },
-    //   migrations: {
-    //     naturalSort: true,
-    //     paths: ['database/migrations'],
-    //   },
-    //   debug: app.inDev,
-    // },
 
     /**
      * MySQL / MariaDB connection.
