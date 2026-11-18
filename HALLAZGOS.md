@@ -8,19 +8,16 @@ Escribe **una sola línea por punto**, con tus palabras y con lo que mediste, no
 
 ## 1. Las filas que cambian y la rama
 
-Cuántas filas cambian de valor en tu cambio de esquema, medido con una consulta, y en qué rama del
-árbol de reversibilidad cae. Si tu migración no toca datos, dilo tal cual: también es una respuesta.
+El Schema.ts no cambia 
 
--
 
 ## 2. Lo que la batería de pruebas no podía ver
 
-Una cosa que la batería de pruebas no podía ver. Si no encontraste ninguna, escribe qué buscaste y dónde.
+-Una tarea terminada con la fecha pasada se sigue mostrando como vencida.
 
--
 
 ## 3. Tu duda
 
-De qué dudaste, o qué no pudiste comprobar.
+Que el parser de date sea lo que arregla el tipo
 
--
+

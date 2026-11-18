@@ -1,0 +1,48 @@
+# PostgreSQL 17 + pgvector para FlowSync: una base de desarrollo y otra de pruebas.
+#
+# Las credenciales son de desarrollo local; los servicios solo publican el puerto en
+# loopback. Arranque: `make db-up` (espera a que las dos bases acepten conexiones).
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync
+    ports:
+      - '127.0.0.1:54410:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      # `-h 127.0.0.1` fuerza TCP, y es lo que hace fiable la comprobación: durante
+      # el primer arranque el entrypoint levanta un servidor temporal que solo
+      # escucha en el socket unix. Sin `-h`, pg_isready contestaría «listo» antes
+      # de que la base acepte conexiones por red.
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U flowsync -d flowsync']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+    restart: unless-stopped
+
+  db-test:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_test
+    ports:
+      - '127.0.0.1:54411:5432'
+    # En memoria y sin volumen: los datos desaparecen al parar el contenedor.
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U flowsync -d flowsync_test']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+volumes:
+  db-data:

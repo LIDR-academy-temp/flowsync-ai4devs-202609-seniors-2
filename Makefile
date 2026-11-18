@@ -14,7 +14,7 @@ BACKEND  := backend
 FRONTEND := frontend
 
 .DEFAULT_GOAL := help
-.PHONY: help setup start install env migrate clean
+.PHONY: help setup start install env migrate clean db-up db-down migrate-all test
 
 # La ayuda se genera a partir de los comentarios `## ...` de cada target, para
 # que no haya un segundo listado que mantener a mano y que pueda divergir.
@@ -22,14 +22,14 @@ help: ## Muestra esta ayuda
 	@echo "FlowSync — targets disponibles:"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) \
-		| awk 'BEGIN { FS = ":.*## " }; { printf "  make %-8s %s\n", $$1, $$2 }'
+		| awk 'BEGIN { FS = ":.*## " }; { printf "  make %-12s %s\n", $$1, $$2 }'
 	@echo ""
 
 # ---------------------------------------------------------------------------
 # setup
 # ---------------------------------------------------------------------------
 
-setup: install env migrate ## Deja el proyecto listo para arrancar
+setup: install env db-up migrate ## Deja el proyecto listo para arrancar
 	@echo ""
 	@echo "✅ Setup completado. Arranca todo con: make start"
 
@@ -62,8 +62,33 @@ env:
 	fi
 
 migrate:
-	@echo "🗃️  Ejecutando migraciones..."
+	@echo "🗃️  Ejecutando migraciones (desarrollo)..."
 	@cd $(BACKEND) && node ace migration:run
+
+# ---------------------------------------------------------------------------
+# base de datos (PostgreSQL en Docker, ver compose.yaml)
+# ---------------------------------------------------------------------------
+
+# `--wait` bloquea hasta que los healthchecks de db y db-test pasan a healthy.
+db-up: ## Arranca las bases de desarrollo y pruebas y espera a que estén listas
+	@command -v docker >/dev/null 2>&1 || { echo "❌ Docker no está instalado."; exit 1; }
+	@echo "🐘 Arrancando PostgreSQL (desarrollo :54410, pruebas :54411)..."
+	@docker compose up -d --wait
+
+db-down: ## Para las bases (la de desarrollo conserva sus datos; la de pruebas no)
+	@docker compose down
+
+# NODE_ENV=test hace que Adonis cargue backend/.env.test, que apunta a db-test.
+migrate-all: db-up ## Migra la base de desarrollo y la de pruebas
+	@echo "🗃️  Migrando desarrollo..."
+	@cd $(BACKEND) && node ace migration:run
+	@echo "🗃️  Migrando pruebas..."
+	@cd $(BACKEND) && NODE_ENV=test node ace migration:run
+
+# La base de pruebas vive en memoria: se migra en cada ejecución.
+test: db-up ## Migra la base de pruebas y lanza la batería del backend
+	@cd $(BACKEND) && NODE_ENV=test node ace migration:run
+	@cd $(BACKEND) && npm test
 
 # ---------------------------------------------------------------------------
 # start
@@ -112,7 +137,7 @@ start: ## Levanta backend y frontend a la vez
 # clean
 # ---------------------------------------------------------------------------
 
-clean: ## Borra node_modules y la base de datos SQLite
+clean: ## Borra node_modules y el SQLite antiguo (las bases Docker no se tocan)
 	@echo "🧹 Limpiando..."
 	@rm -rf $(BACKEND)/node_modules $(FRONTEND)/node_modules
 	@rm -f $(BACKEND)/tmp/db.sqlite3 $(BACKEND)/tmp/db.sqlite3-wal $(BACKEND)/tmp/db.sqlite3-shm
