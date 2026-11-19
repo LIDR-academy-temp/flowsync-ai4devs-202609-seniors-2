@@ -22,14 +22,30 @@ Borra el ejemplo de abajo cuando escribas el primero.
 
 ## Prompt 1
 
-**Modelo:** Opus 1M xHigh
+**Modelo:** Sonnet 5.5 xMedium
 **Herramienta:** Claude Code
 
 ```
-Este es el ejemplo. Bórralo.
+Migra el proyecto de backend de SQLite a PostgreSQL en Docker, con una base de datos para desarrollo y otra para pruebas. No hagas commit
 
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+El archivo de Compose se llama compose.yaml y define dos servicios, db y db-test.
+
+Usa pgvector/pgvector:pg17, que incluye PostgreSQL 17 con la extensión pgvector.
+
+Usa los puertos 54410 para desarrollo y 54411 para pruebas. Así evitas un conflicto si ya tienes una instancia de PostgreSQL en el 5432.
+
+La base de pruebas va en memoria, sin volumen. Así, los datos de una ejecución no quedan guardados para la siguiente.
+
+Configura una comprobación de salud en ambos servicios. El arranque debe esperar a que las dos bases acepten conexiones. En el primer arranque, PostgreSQL todavía está inicializando la base cuando otros procesos pueden intentar conectarse.
+
+Omite la clave version: de compose.yaml. Está obsoleta y Docker muestra un aviso si la incluyes.
+
+Haz que la batería de pruebas se conecte a la base de pruebas mediante su propio archivo de entorno. El framework lo carga solo en ese entorno.
+
+Añade atajos en el Makefile para arrancar y detener las bases, ejecutar las migraciones en ambas y lanzar las pruebas.
+
+Conserva intactas las migraciones existentes. 
+
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** funcionó a la primera.
