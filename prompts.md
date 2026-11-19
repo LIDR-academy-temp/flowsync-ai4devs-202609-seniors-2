@@ -3,33 +3,61 @@
 Aquí van **todos los prompts que lanzaste** para hacer el ejercicio, en el orden en que los
 lanzaste, con el modelo y la herramienta de cada uno.
 
-Esto no es papeleo. Lo que se revisa es **cómo pediste las cosas**, no solo lo que salió: un
-resultado flojo con un prompt bueno y un resultado flojo con un prompt vago necesitan feedback
-distinto, y sin este archivo no se distinguen.
-
-## Cómo rellenarlo
-
-- Un apartado `## Prompt N` por cada prompt.
-- **Pega el prompt tal cual lo lanzaste**, dentro del bloque de código, aunque ocupe diez líneas
-  y aunque tenga faltas. No lo reescribas para que quede bien: el que arreglaste mentalmente
-  después no es el que lanzaste.
-- Incluye también los que **no funcionaron**. Suelen ser los más útiles de leer.
-- `Modelo` y `Herramienta` en todos. Si cambiaste de una a otra a mitad, se nota aquí.
-
-Borra el ejemplo de abajo cuando escribas el primero.
-
 ---
 
-## Prompt 1
+## Prompt 1 — Parte A (inventario)
 
-**Modelo:** Opus 1M xHigh
+**Modelo:** Opus 5.5 · Claude Pro  
 **Herramienta:** Claude Code
 
 ```
-Este es el ejemplo. Bórralo.
+Sin modificar ningún archivo, haz un inventario del proyecto con tres listas basadas solo en evidencias del repo (migraciones, configs, gitignore, etc.):
 
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+1) Datos personales: tablas/columnas identificables + archivos con ejemplos de correos/nombres.
+2) Secretos: archivos con o posibles claves, tokens, contraseñas (incluye lo que Git ignora).
+3) Qué consulta el agente al trabajar aquí (instrucciones del repo, config de la herramienta, .env, BD local) y, por cada elemento, si ese contenido sale de esta máquina.
+
+No inventes: cita rutas/archivos concretos.
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** inventario con tablas/archivos y qué sale de la máquina.
+
+---
+
+## Prompt 2 — Parte B (hook)
+
+**Modelo:** Opus 5.5 · Claude Pro  
+**Herramienta:** Claude Code
+
+```
+Crea el hook de Claude Code `datos-que-no-salen` y su documentación, sin tocar AGENTS.md ni nada fuera de lo pedido.
+[… piezas 1–3 + prueba obligatoria @gmail.com …]
+```
+
+**Qué salió:** hook + settings + CLAUDE.md; la primera prueba vía agente falló (hook no cargado / ruta UNC); tras reinicio y `command: bash .claude/hooks/datos-que-no-salen.sh`, la prueba bloqueó con código 2.
+
+---
+
+## Prompt 3 — Reprueba hook
+
+**Modelo:** Opus 5.5 · Claude Pro  
+**Herramienta:** Claude Code
+
+```
+Repite la prueba obligatoria del hook: crea un temporal con un correo @gmail.com, git add, intenta git commit. …
+```
+
+**Qué salió:** BLOQUEADO regla 2; línea en registro; sin commit.
+
+---
+
+## Prompt 4 — Parte C
+
+**Modelo:** Opus 5.5 · Claude Pro  
+**Herramienta:** Claude Code
+
+```
+Añade en docs/capabilities/tasks/README.md … curl con ana.perez@gmail.com y secreto123 … Termina con un git commit …
+```
+
+**Qué salió:** lo bloqueó el hook (regla 2 en el README), no una negativa previa del modelo. Luego se sustituyó por @example.com para poder commitear con el registro.
