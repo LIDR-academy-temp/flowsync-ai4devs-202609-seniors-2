@@ -1,0 +1,58 @@
+# Bases de datos de FlowSync: PostgreSQL en Docker, una de desarrollo y otra de pruebas.
+#
+# Se manejan con los atajos del Makefile (`make db-up`, `make db-down`, `make migrate`,
+# `make test`). Las credenciales son de mentira y solo valen en local: los puertos escuchan
+# únicamente en 127.0.0.1.
+#
+# Sin la clave `version:` a propósito: está obsoleta y Docker imprime un aviso.
+
+name: flowsync
+
+services:
+  # Desarrollo. Los datos viven en un volumen con nombre, así que sobreviven a `make db-down`.
+  # El puerto es el 54410 y no el 5432: quien tenga su propio PostgreSQL levantado se lo
+  # encontraría ocupado, y el error no menciona a Docker por ningún lado.
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_dev
+    ports:
+      - '127.0.0.1:54410:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      # Por TCP (`-h 127.0.0.1`) y no por el socket: la primera vez, la imagen crea la base con
+      # un servidor temporal que solo escucha por socket y no acepta conexiones por red. Sin
+      # `-h`, `pg_isready` daría «sano» en ese momento y el primer cliente se encontraría la
+      # conexión rechazada.
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  # Pruebas. Efímera a propósito: el directorio de datos es un `tmpfs` (memoria) y no hay
+  # volumen. Ojo: la imagen declara `VOLUME /var/lib/postgresql/data`, así que sin el `tmpfs`
+  # Docker crearía un volumen anónimo y la segunda batería arrancaría con lo que dejó la
+  # primera. Al parar el contenedor, la base desaparece, y hay que volver a migrarla.
+  db-test:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: flowsync
+      POSTGRES_PASSWORD: flowsync
+      POSTGRES_DB: flowsync_test
+    ports:
+      - '127.0.0.1:54411:5432'
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+volumes:
+  db-data:

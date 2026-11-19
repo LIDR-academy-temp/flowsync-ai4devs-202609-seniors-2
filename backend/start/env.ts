@@ -24,4 +24,12 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   // Session
   SESSION_DRIVER: Env.schema.enum(['cookie', 'memory', 'database'] as const),
+
+  // Database (PostgreSQL). Desarrollo y pruebas apuntan a bases distintas: las pruebas
+  // sobrescriben estos valores en `.env.test`, que Adonis carga solo con NODE_ENV=test.
+  DB_HOST: Env.schema.string({ format: 'host' }),
+  DB_PORT: Env.schema.number(),
+  DB_USER: Env.schema.string(),
+  DB_PASSWORD: Env.schema.secret(),
+  DB_DATABASE: Env.schema.string(),
 })
