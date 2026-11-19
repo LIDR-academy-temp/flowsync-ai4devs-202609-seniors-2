@@ -112,8 +112,12 @@ empiezan por «La interfaz SHALL…».
 cd backend
 npm install
 cp .env.example .env && node ace generate:key   # solo la primera vez
-node ace migration:run                          # crea tmp/db.sqlite3
+(cd .. && make db-up)                           # levanta PostgreSQL: desarrollo (54410) y pruebas (54411)
+node ace migration:run                          # migra la base de desarrollo
 ```
+
+Para correr los tests, desde la raíz, `make test`: levanta las bases, migra la de pruebas (nace
+vacía cada vez que se levanta) y lanza la suite.
 
 ### Tests automáticos
 
@@ -132,11 +136,11 @@ señal de que la capability cumpla su spec.
 
 Dos cosas que hay que saber antes de escribir un test aquí:
 
-- La suite functional pega contra **el mismo fichero SQLite que el servidor de desarrollo**:
-  [`config/database.ts`](../../../backend/config/database.ts) declara una sola conexión sin override
-  por entorno. Aísla siempre con `testUtils.db().withGlobalTransaction()` en un `group.each.setup`,
-  como hacen los tests existentes. **No** uses truncate: se llevaría por delante los datos con los que
-  estés trabajando.
+- La suite functional pega contra **su propia base**, el servicio `db-test` de `compose.yaml` (puerto
+  54411, en memoria): `.env.test` la declara y Adonis lo carga solo con `NODE_ENV=test`. Ya no es la
+  base del servidor de desarrollo, pero aísla igualmente con
+  `testUtils.db().withGlobalTransaction()` en un `group.each.setup`, como hacen los tests existentes,
+  para no depender de lo que dejó el test anterior.
 - Un test por scenario, citando el requisito en la cabecera del fichero. Es lo que permite leer la
   spec y saber qué falta.
 

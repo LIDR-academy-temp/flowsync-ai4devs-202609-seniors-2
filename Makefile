@@ -1,6 +1,7 @@
 # FlowSync — atajos de desarrollo.
 #
-# Requisitos: Node.js + npm y GNU Make.
+# Requisitos: Node.js + npm, GNU Make y Docker (las bases de datos son PostgreSQL en
+# contenedores, ver compose.yaml).
 #   - macOS:        make viene con las Command Line Tools de Xcode.
 #   - Linux / WSL:  sudo apt install make   (o el equivalente de tu distro)
 #
@@ -14,7 +15,7 @@ BACKEND  := backend
 FRONTEND := frontend
 
 .DEFAULT_GOAL := help
-.PHONY: help setup start install env migrate clean
+.PHONY: help setup start install env db-up db-down migrate migrate-dev migrate-test test clean
 
 # La ayuda se genera a partir de los comentarios `## ...` de cada target, para
 # que no haya un segundo listado que mantener a mano y que pueda divergir.
@@ -61,9 +62,40 @@ env:
 		cd $(BACKEND) && node ace generate:key; \
 	fi
 
-migrate:
-	@echo "🗃️  Ejecutando migraciones..."
+# ---------------------------------------------------------------------------
+# bases de datos
+# ---------------------------------------------------------------------------
+
+# `--wait` bloquea hasta que los dos contenedores pasan su comprobación de salud. Sin él,
+# `up -d` vuelve en cuanto arrancan, y la primera vez PostgreSQL todavía está creando la
+# base y no acepta conexiones: la primera migración fallaría con «conexión rechazada».
+# El `docker info` previo es porque, con Docker apagado, `docker compose` da un error que
+# se parece al de no tenerlo instalado.
+db-up: ## Levanta las bases de desarrollo (54410) y pruebas (54411), y espera a que estén sanas
+	@command -v docker >/dev/null 2>&1 || { echo "❌ Docker no está instalado."; exit 1; }
+	@docker info >/dev/null 2>&1 || { echo "❌ Docker está instalado pero no responde: ábrelo (o arranca el servicio)."; exit 1; }
+	@echo "🐘 Levantando PostgreSQL (desarrollo: 54410, pruebas: 54411)..."
+	@docker compose up -d --wait
+
+# Los datos de desarrollo viven en un volumen y sobreviven. La base de pruebas está en
+# memoria: al pararla desaparece, y `make migrate` o `make test` la vuelven a crear.
+db-down: ## Para las bases (desarrollo conserva sus datos; pruebas se pierde a propósito)
+	@docker compose down
+
+migrate: migrate-dev migrate-test ## Migra las dos bases: desarrollo y pruebas
+
+migrate-dev: db-up
+	@echo "🗃️  Migrando la base de desarrollo..."
 	@cd $(BACKEND) && node ace migration:run
+
+# NODE_ENV=test hace que Adonis cargue backend/.env.test, que apunta a la base de pruebas.
+migrate-test: db-up
+	@echo "🗃️  Migrando la base de pruebas..."
+	@cd $(BACKEND) && NODE_ENV=test node ace migration:run
+
+# La base de pruebas nace vacía cada vez que se levanta, así que se migra antes de correr.
+test: migrate-test ## Migra la base de pruebas y corre la batería del backend
+	@cd $(BACKEND) && npm test
 
 # ---------------------------------------------------------------------------
 # start
@@ -91,7 +123,7 @@ migrate:
 # delante a él también. Aislar los servidores en su propio grupo con `set -m`
 # no vale: los dejaría en segundo plano y el primer `read` de stdin les
 # provocaría un SIGTTIN, colgando el "Press h" de Adonis y los atajos de Vite.
-start: ## Levanta backend y frontend a la vez
+start: db-up ## Levanta las bases, el backend y el frontend a la vez
 	@if [ ! -d $(BACKEND)/node_modules ] || [ ! -d $(FRONTEND)/node_modules ]; then \
 		echo "❌ Faltan dependencias. Ejecuta primero: make setup"; exit 1; \
 	fi
@@ -112,8 +144,8 @@ start: ## Levanta backend y frontend a la vez
 # clean
 # ---------------------------------------------------------------------------
 
-clean: ## Borra node_modules y la base de datos SQLite
+clean: ## Borra node_modules y las bases de datos (contenedores y volumen)
 	@echo "🧹 Limpiando..."
 	@rm -rf $(BACKEND)/node_modules $(FRONTEND)/node_modules
-	@rm -f $(BACKEND)/tmp/db.sqlite3 $(BACKEND)/tmp/db.sqlite3-wal $(BACKEND)/tmp/db.sqlite3-shm
+	@docker compose down --volumes --remove-orphans || echo "⚠️  Docker no responde: las bases no se han borrado."
 	@echo "✅ Listo. Vuelve a ejecutar: make setup"
