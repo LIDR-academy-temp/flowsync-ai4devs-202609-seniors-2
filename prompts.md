@@ -16,20 +16,28 @@ distinto, y sin este archivo no se distinguen.
 - Incluye también los que **no funcionaron**. Suelen ser los más útiles de leer.
 - `Modelo` y `Herramienta` en todos. Si cambiaste de una a otra a mitad, se nota aquí.
 
-Borra el ejemplo de abajo cuando escribas el primero.
-
 ---
 
 ## Prompt 1
 
-**Modelo:** Opus 1M xHigh
-**Herramienta:** Claude Code
+**Modelo:** Composer
+**Herramienta:** Cursor Agent (WSL `/root/proyectos/flowsync-ai4devs`, rama `motor-PC`)
 
 ```
-Este es el ejemplo. Bórralo.
+Migra el proyecto de SQLite a PostgreSQL en Docker, con una base de datos para desarrollo y otra para pruebas.
 
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+Restricciones:
+- compose.yaml con servicios db y db-test
+- imagen pgvector/pgvector:pg17
+- puertos 54410 (dev) y 54411 (test)
+- la BD de pruebas va en memoria, sin volumen
+- healthcheck en ambos; el arranque espera a que acepten conexiones
+- sin clave version: en compose.yaml
+- los tests usan su propio archivo de entorno apuntando a la BD de test
+- atajos Makefile para arrancar/detener BDs, migrar ambas y lanzar tests
+- conserva intactas las migraciones existentes; si proponés modificar alguna, pará y anotalo como hallazgo
+
+Después Parte B: typecheck, diff de backend/database/schema.ts vs s10/start, y comprobar cómo decide el proyecto si una tarea está vencida (con una que ya debería estarlo). Parte C: tres líneas en HALLAZGOS.md.
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** 23/23 en PG. schema.ts sin diff; runtime `dueDate` pasa a `Date` y rompe `isOverdueOn` en silencio.
