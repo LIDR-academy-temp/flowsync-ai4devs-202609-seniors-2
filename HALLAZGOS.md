@@ -6,21 +6,22 @@ porque lo que se discute en el directo es dónde te chocaste.
 
 Escribe **una sola línea por punto**, con tus palabras y con lo que mediste, no con lo que suponías.
 
-## 1. Las filas que cambian y la rama
+## 1.  Cuántos de tus casos nuevos fallaron y cuántos de los que ya había siguieron en verde, con la cifra que te dio la pantalla.
 
-Cuántas filas cambian de valor en tu cambio de esquema, medido con una consulta, y en qué rama del
-árbol de reversibilidad cae. Si tu migración no toca datos, dilo tal cual: también es una respuesta.
-
+De los 6 casos nuevos de tests/unit/, fallaron 2  en total pasaron Tests  44 passed delos anteriores y los que habian fallado fueron 5 
 -
 
-## 2. Lo que la batería de pruebas no podía ver
+## 2. Cuál de tus casos nuevos PASÓ, si alguno pasó, y por qué crees que pasó. Es la pregunta más interesante del ejercicio, y la respuesta no está en ningún sitio: se deduce mirando qué tienen en común los que fallaron.
 
-Una cosa que la batería de pruebas no podía ver. Si no encontraste ninguna, escribe qué buscaste y dónde.
+1. Fecha anterior al día de referencia y sin hacer: vencida.
+2. Fecha igual al día de referencia: no vencida.
+3. Fecha posterior: no vencida.
+4. Sin fecha: nunca vencida.
 
 -
 
 ## 3. Tu duda
 
-De qué dudaste, o qué no pudiste comprobar.
+si todos los casos realmente estan bien cubietos por las test
 
 -
